@@ -3,50 +3,101 @@ let modeRevision = false;
 let erreurs = JSON.parse(localStorage.getItem("erreurs")) || [];
 
 document.addEventListener("DOMContentLoaded", () => {
+    const paintingsDiv = document.getElementById("paintings");
+    if (paintingsDiv) {
+        paintingsDiv.innerHTML = "<p>Chargement des œuvres...</p>";
+    } else {
+        console.error("L'élément avec l'ID 'paintings' n'a pas été trouvé.");
+        return; // Arrête l'exécution si l'élément est absent
+    }
+
     fetch("data/oeuvres.json")
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`Erreur HTTP: ${res.status} - Vérifiez le chemin du fichier`);
+            }
+            return res.json();
+        })
         .then(data => {
             console.log("Données chargées:", data);
-            oeuvres = data;
-            initQuiz();
+            if (data && data.length > 0) {
+                oeuvres = data;
+                initQuiz();
+            } else {
+                throw new Error("Le fichier JSON ne contient pas de données valides");
+            }
         })
-        .catch(error => console.error("Erreur lors du chargement des œuvres :", error));
+        .catch(error => {
+            console.error("Erreur lors du chargement des œuvres :", error);
+            paintingsDiv.innerHTML = `<p>Erreur de chargement: ${error.message}</p>
+                                     <p>Vérifiez que le fichier data/oeuvres.json existe et est valide.</p>`;
+        });
 
-    document.getElementById("mode-normal").addEventListener("click", () => {
-        modeRevision = false;
-        initQuiz();
-    });
+    // Vérification de l'existence des éléments avant d'ajouter les listeners
+    const resetButton = document.getElementById("reset-errors");
+    if (resetButton) {
+        resetButton.addEventListener("click", () => {
+            erreurs = [];
+            localStorage.setItem("erreurs", JSON.stringify(erreurs));
+            alert("Erreurs vidées !");
+        });
+    } else {
+        console.error("L'élément avec l'ID 'reset-errors' n'a pas été trouvé.");
+    }
 
-    document.getElementById("mode-revision").addEventListener("click", () => {
-        modeRevision = true;
-        initQuiz();
-    });
+    const modeNormalButton = document.getElementById("mode-normal");
+    if (modeNormalButton) {
+        modeNormalButton.addEventListener("click", () => {
+            modeRevision = false;
+            initQuiz();
+        });
+    } else {
+        console.error("L'élément avec l'ID 'mode-normal' n'a pas été trouvé.");
+    }
 
+    const modeRevisionButton = document.getElementById("mode-revision");
+    if (modeRevisionButton) {
+        modeRevisionButton.addEventListener("click", () => {
+            modeRevision = true;
+            initQuiz();
+        });
+    } else {
+        console.error("L'élément avec l'ID 'mode-revision' n'a pas été trouvé.");
+    }
 
-    document.getElementById("reset-errors").addEventListener("click", () => {
-        erreurs = [];
-        localStorage.setItem("erreurs", JSON.stringify(erreurs));
-        alert("Erreurs vidées !");
-    });
+    const validateButton = document.getElementById("validate");
+    if (validateButton) {
+        validateButton.addEventListener("click", validateAnswers);
+    } else {
+        console.error("L'élément avec l'ID 'validate' n'a pas été trouvé.");
+    }
 
-    document.getElementById("validate").addEventListener("click", validateAnswers);
-
-    // Fermeture de la modale via le bouton
     const modal = document.getElementById("modal");
-    document.getElementById("close-modal").addEventListener("click", () => {
-        modal.classList.add("hidden");
-    });
-
-    // Fermeture de la modale en cliquant en dehors du contenu
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            modal.classList.add("hidden");
+    if (modal) {
+        const closeModalButton = document.getElementById("close-modal");
+        if (closeModalButton) {
+            closeModalButton.addEventListener("click", () => {
+                modal.classList.add("hidden");
+            });
+        } else {
+            console.error("L'élément avec l'ID 'close-modal' n'a pas été trouvé.");
         }
-    });
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.classList.add("hidden");
+            }
+        });
+    } else {
+        console.error("L'élément avec l'ID 'modal' n'a pas été trouvé.");
+    }
 });
 
 function initQuiz() {
     const paintingsDiv = document.getElementById("paintings");
+    if (!paintingsDiv) {
+        console.error("L'élément avec l'ID 'paintings' n'a pas été trouvé.");
+        return; // Arrête l'exécution si l'élément est absent
+    }
     paintingsDiv.innerHTML = "";
 
     if (!oeuvres || oeuvres.length === 0) {
@@ -66,7 +117,6 @@ function initQuiz() {
         pool = shuffleArray([...oeuvres]).slice(0, 4);
     }
 
-    // Listes uniques artistes et courants pour ce pool
     let artistesList = [...new Set(pool.map(o => o.artiste))];
     let courantsList = [...new Set(pool.map(o => o.mouvement))];
     artistesList = shuffleArray([...artistesList]);
@@ -83,7 +133,6 @@ function initQuiz() {
         img.addEventListener("click", () => openFullscreen(img));
         card.appendChild(img);
 
-        // Bouton infos
         const infoBtn = document.createElement("button");
         infoBtn.textContent = "Infos";
         infoBtn.className = "info-btn";
@@ -95,7 +144,6 @@ function initQuiz() {
         title.textContent = o.titre;
         card.appendChild(title);
 
-        // Drop artiste
         const dropArtiste = document.createElement("div");
         dropArtiste.className = "drop-zone artiste";
         dropArtiste.dataset.answer = o.artiste;
@@ -107,7 +155,6 @@ function initQuiz() {
         dropArtiste.addEventListener("drop", drop);
         card.appendChild(dropArtiste);
 
-        // Drop courant
         const dropCourant = document.createElement("div");
         dropCourant.className = "drop-zone courant";
         dropCourant.dataset.answer = o.mouvement;
@@ -119,10 +166,8 @@ function initQuiz() {
         dropCourant.addEventListener("drop", drop);
         card.appendChild(dropCourant);
 
-        // Ajout : zone de drag sous l'image
         const dragZone = document.createElement("div");
         dragZone.className = "drag-items";
-        // Mélange artistes et courants pour cette carte
         const items = shuffleArray([
             ...artistesList.map(a => ({ type: "artiste", value: a })),
             ...courantsList.map(c => ({ type: "courant", value: c }))
@@ -183,10 +228,8 @@ function drop(ev) {
     const dropZone = ev.target.classList.contains("drop-zone") ? ev.target : ev.target.closest(".drop-zone");
     if (!dropZone) return;
 
-    // Vérifie le type
     if (dropZone.dataset.type !== type) return;
 
-    // Empêche deux drag and drop sur la même case
     if (dropZone.querySelector(".dropped-painter")) return;
 
     dropZone.classList.remove("dragover");
@@ -204,7 +247,6 @@ function drop(ev) {
     });
 }
 
-// Pour permettre la suppression d'un drag and drop dans la liste de gauche
 function removeIfDropped(ev) {
     // Ne rien faire ici, mais tu peux personnaliser si besoin
 }
@@ -224,7 +266,6 @@ function validateAnswers() {
 
         let correct = true;
 
-        // Vérifie artiste
         total++;
         if (droppedArtiste && droppedArtiste.textContent === dropArtiste.dataset.answer) {
             dropArtiste.classList.add("correct");
@@ -244,7 +285,6 @@ function validateAnswers() {
             }
         }
 
-        // Vérifie courant
         total++;
         if (droppedCourant && droppedCourant.textContent === dropCourant.dataset.answer) {
             dropCourant.classList.add("correct");
@@ -264,7 +304,6 @@ function validateAnswers() {
             }
         }
 
-        // Gestion des erreurs pour le mode révision
         if (!correct && !erreurs.includes(titreImage)) {
             erreurs.push(titreImage);
         }
