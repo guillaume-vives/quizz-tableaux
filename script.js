@@ -34,8 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Ajout d'une vérification pour s'assurer que le bouton existe
   if (closeModalButton) {
-    closeModalButton.addEventListener("click", () => {
-      document.getElementById("modal").classList.add("hidden");
+    document.getElementById("modal").addEventListener("click", (event) => {
+      if (event.target.id === "modal") {
+        document.getElementById("modal").classList.add("hidden");
+      }
     });
   } else {
     console.error("Le bouton de fermeture de la modal n'a pas été trouvé.");
