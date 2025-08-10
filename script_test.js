@@ -112,16 +112,13 @@ function showZoomableImage(imageSrc, title) {
     zoomInBtn.innerHTML = "+";
     zoomInBtn.title = "Zoom in";
 
-    const zoomOutBtn = document.createElement("button");
-    zoomOutBtn.innerHTML = "-";
+    const zoomOutBtn = document.innerHTML = "-";
     zoomOutBtn.title = "Zoom out";
 
-    const resetZoomBtn = document.createElement("button");
-    resetZoomBtn.innerHTML = "&#x1f5d8;"; // symbole reset
+    const resetZoomBtn = document.innerHTML = "&#x1f5d8;"; // symbole reset
     resetZoomBtn.title = "Reset zoom";
 
-    const closeBtn = document.createElement("button");
-    closeBtn.innerHTML = "×";
+    const closeBtn = document.innerHTML = "×";
     closeBtn.className = "close-modal-btn";
 
     // Ajouter un titre
@@ -136,7 +133,11 @@ function showZoomableImage(imageSrc, title) {
     imageContainer.appendChild(img);
     modal.appendChild(closeBtn);
     modal.appendChild(titleElem);
+    imageContainer.appendChild(img);
+    modal.appendChild(closeBtn);
+    modal.appendChild(titleElem);
     modal.appendChild(imageContainer);
+    modal.appendChild(zoomControls);
 
     document.body.appendChild(modal);
 
@@ -240,7 +241,10 @@ function showZoomableImage(imageSrc, title) {
             document.body.removeChild(modal);
         }
     });
+
+    document.body.appendChild(modal);
 }
+
 
 function createPaintingCard(oeuvre) {
     const card = document.createElement("div");
