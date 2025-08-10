@@ -1,3 +1,5 @@
+"use strict";
+
 // Fonctions utilitaires d'abord
 function shuffleArray(arr) {
     const newArr = [...arr];
@@ -15,7 +17,7 @@ let erreurs = [];
 
 // Fonction principale - point d'entrée
 function init() {
-    console.log("Initialisation du quiz...");
+    console.log("Init-Initialisation du quiz...");
 
     // Charger les erreurs depuis localStorage
     try { erreurs = JSON.parse(localStorage.getItem("erreurs")) || []; } catch (e) { console.error("Erreur lors du chargement des erreurs:", e); erreurs = []; }
@@ -76,7 +78,7 @@ function loadData() {
 
 // Initialisation du quiz
 function initQuiz() {
-    console.log("Initialisation du quiz...");
+    console.log("initQuizz - Initialisation du quiz...");
 
     const paintingsDiv = document.getElementById("paintings"); // On récupère l'élément paintings
     paintingsDiv.innerHTML = ""; // On s'assure qu'il est vide
