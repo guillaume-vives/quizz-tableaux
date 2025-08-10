@@ -52,11 +52,16 @@ function drop(ev) {
 
     dropZone.classList.remove("dragover");
 
+    // Supprimer le texte par défaut
+    dropZone.textContent = "";
+
     const droppedElement = document.createElement("div");
     droppedElement.textContent = data;
     droppedElement.className = "dropped-painter";
     droppedElement.addEventListener("click", function() {
         dropZone.removeChild(droppedElement);
+         // Restaurer le texte par défaut
+        dropZone.textContent = dropZone.dataset.type === "artiste" ? "Artiste" : "Courant";
     });
     dropZone.appendChild(droppedElement);
 
@@ -85,157 +90,165 @@ function showMetadata(oeuvre) {
 }
 
 function showZoomableImage(imageSrc, title) {
-        // Créer un conteneur modal pour l'image
-        const modal = document.createElement("div");
-        modal.className = "image-modal";
-        
-        // Créer le conteneur pour l'image zoomable
-        const imageContainer = document.createElement("div");
-        imageContainer.className = "zoomable-image-container";
-        
-        // Créer l'image
-        const img = document.createElement("img");
-        img.src = imageSrc;
-        img.alt = title;
-        img.className = "zoomable-image";
-        
-        // Ajouter des contrôles de zoom
-        const zoomControls = document.createElement("div");
-        zoomControls.className = "zoom-controls";
-        
-        const zoomInBtn = document.createElement("button");
-        zoomInBtn.innerHTML = "+";
-        zoomInBtn.title = "Zoom in";
-        
-        const zoomOutBtn = document.createElement("button");
-        zoomOutBtn.innerHTML = "-";
-        zoomOutBtn.title = "Zoom out";
-        
-        const resetZoomBtn = document.createElement("button");
-        resetZoomBtn.innerHTML = "&#x1f5d8;"; // symbole reset
-        resetZoomBtn.title = "Reset zoom";
-        
-        const closeBtn = document.createElement("button");
-        closeBtn.innerHTML = "×";
-        closeBtn.className = "close-modal-btn";
-        
-        // Ajouter un titre
-        const titleElem = document.createElement("h3");
-        titleElem.textContent = title;
-        
-        // Assembler les éléments
-        zoomControls.appendChild(zoomInBtn);
-        zoomControls.appendChild(zoomOutBtn);
-        zoomControls.appendChild(resetZoomBtn);
-        
-        imageContainer.appendChild(img);
-        modal.appendChild(closeBtn);
-        modal.appendChild(titleElem);
-        modal.appendChild(imageContainer);
-        modal.appendChild(zoomControls);
-        
-        document.body.appendChild(modal);
-        
-        // Variables pour le zoom et le déplacement
-        let scale = 1;
-        let panning = false;
-        let pointX = 0;
-        let pointY = 0;
-        let start = { x: 0, y: 0 };
-        
-        // Fonction pour appliquer la transformation
-        function setTransform() {
-            img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    // Créer un conteneur modal pour l'image
+    const modal = document.createElement("div");
+    modal.className = "image-modal";
+
+    // Créer le conteneur pour l'image zoomable
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "zoomable-image-container";
+
+    // Créer l'image
+    const img = document.createElement("img");
+    img.src = imageSrc;
+    img.alt = title;
+    img.className = "zoomable-image";
+
+    // Ajouter des contrôles de zoom
+    const zoomControls = document.createElement("div");
+    zoomControls.className = "zoom-controls";
+
+    const zoomInBtn = document.createElement("button");
+    zoomInBtn.innerHTML = "+";
+    zoomInBtn.title = "Zoom in";
+
+    const zoomOutBtn = document.createElement("button");
+    zoomOutBtn.innerHTML = "-";
+    zoomOutBtn.title = "Zoom out";
+
+    const resetZoomBtn = document.createElement("button");
+    resetZoomBtn.innerHTML = "&#x1f5d8;"; // symbole reset
+    resetZoomBtn.title = "Reset zoom";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.innerHTML = "×";
+    closeBtn.className = "close-modal-btn";
+
+    // Ajouter un titre
+    const titleElem = document.createElement("h3");
+    titleElem.textContent = title;
+
+    // Assembler les éléments
+    zoomControls.appendChild(zoomInBtn);
+    zoomControls.appendChild(zoomOutBtn);
+    zoomControls.appendChild(resetZoomBtn);
+
+    imageContainer.appendChild(img);
+    modal.appendChild(closeBtn);
+    modal.appendChild(titleElem);
+    modal.appendChild(imageContainer);
+    zoomControls.appendChild(zoomInBtn);
+    zoomControls.appendChild(zoomOutBtn);
+    zoomControls.appendChild(resetZoomBtn);
+
+    imageContainer.appendChild(img);
+    modal.appendChild(closeBtn);
+    modal.appendChild(titleElem);
+    modal.appendChild(imageContainer);
+    modal.appendChild(zoomControls);
+
+    document.body.appendChild(modal);
+
+    // Variables pour le zoom et le déplacement
+    let scale = 1;
+    let panning = false;
+    let pointX = 0;
+    let pointY = 0;
+    let start = { x: 0, y: 0 };
+
+    // Fonction pour appliquer la transformation
+    function setTransform() {
+        img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    }
+
+    // Event listeners pour le zoom
+    zoomInBtn.addEventListener("click", function() {
+        scale += 0.1;
+        setTransform();
+    });
+
+    zoomOutBtn.addEventListener("click", function() {
+        scale = Math.max(0.5, scale - 0.1);
+        setTransform();
+    });
+
+    resetZoomBtn.addEventListener("click", function() {
+        scale = 1;
+        pointX = 0;
+        pointY = 0;
+        setTransform();
+    });
+
+    // Event listeners pour le déplacement de l'image
+    img.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        start = { x: e.clientX - pointX, y: e.clientY - pointY };
+        panning = true;
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!panning) return;
+        pointX = (e.clientX - start.x);
+        pointY = (e.clientY - start.y);
+        setTransform();
+    });
+
+    document.addEventListener('mouseup', function(e) {
+        panning = false;
+    });
+
+    // Support pour le pinch zoom sur mobile
+    let evCache = new Array();
+    let prevDiff = -1;
+
+    img.addEventListener('touchstart', function(e) {
+        for (let i = 0; i < e.touches.length; i++) {
+            evCache.push(e.touches[i]);
         }
-        
-        // Event listeners pour le zoom
-        zoomInBtn.addEventListener("click", function() {
-            scale += 0.1;
-            setTransform();
-        });
-        
-        zoomOutBtn.addEventListener("click", function() {
-            scale = Math.max(0.5, scale - 0.1);
-            setTransform();
-        });
-        
-        resetZoomBtn.addEventListener("click", function() {
-            scale = 1;
-            pointX = 0;
-            pointY = 0;
-            setTransform();
-        });
-        
-        // Event listeners pour le déplacement de l'image
-        img.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            start = { x: e.clientX - pointX, y: e.clientY - pointY };
-            panning = true;
-        });
-        
-        document.addEventListener('mousemove', function(e) {
-            if (!panning) return;
-            pointX = (e.clientX - start.x);
-            pointY = (e.clientY - start.y);
-            setTransform();
-        });
-        
-        document.addEventListener('mouseup', function(e) {
-            panning = false;
-        });
-        
-        // Support pour le pinch zoom sur mobile
-        let evCache = new Array();
-        let prevDiff = -1;
-        
-        img.addEventListener('touchstart', function(e) {
-            for (let i = 0; i < e.touches.length; i++) {
-                evCache.push(e.touches[i]);
-            }
-        });
-        
-        img.addEventListener('touchmove', function(e) {
-            if (e.touches.length === 2) {
-                // Pinch zoom
-                let curDiff = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
-                
-                if (prevDiff > 0) {
-                    if (curDiff > prevDiff) {
-                        // Les doigts s'écartent, zoom in
-                        scale += 0.02;
-                        setTransform();
-                    }
-                    if (curDiff < prevDiff) {
-                        // Les doigts se rapprochent, zoom out
-                        scale = Math.max(0.5, scale - 0.02);
-                        setTransform();
-                    }
+    });
+
+    img.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2) {
+            // Pinch zoom
+            let curDiff = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
+
+            if (prevDiff > 0) {
+                if (curDiff > prevDiff) {
+                    // Les doigts s'écartent, zoom in
+                    scale += 0.02;
+                    setTransform();
                 }
-                
-                prevDiff = curDiff;
-            } else if (e.touches.length === 1) {
-                // Déplacement avec un doigt
-                pointX = e.touches[0].clientX - start.x;
-                pointY = e.touches[0].clientY - start.y;
-                setTransform();
+                if (curDiff < prevDiff) {
+                    // Les doigts se rapprochent, zoom out
+                    scale = Math.max(0.5, scale - 0.02);
+                    setTransform();
+                }
             }
-        });
-        
-        img.addEventListener('touchend', function(e) {
-            evCache = [];
-            prevDiff = -1;
-        });
-        
-        // Fermer le modal
-        closeBtn.addEventListener('click', function() {
+
+            prevDiff = curDiff;
+        } else if (e.touches.length === 1) {
+            // Déplacement avec un doigt
+            pointX = e.touches[0].clientX - start.x;
+            pointY = e.touches[0].clientY - start.y;
+            setTransform();
+        }
+    });
+
+    img.addEventListener('touchend', function(e) {
+        evCache = [];
+        prevDiff = -1;
+    });
+
+    // Fermer le modal
+    closeBtn.addEventListener('click', function() {
+        document.body.removeChild(modal);
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
             document.body.removeChild(modal);
-        });
-        
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                document.body.removeChild(modal);
-            }
-        });
+        }
+    });
 }
 
 function createPaintingCard(oeuvre) {
@@ -306,12 +319,23 @@ function initQuiz() {
     paintingsDiv.appendChild(tableauxSection);
     document.getElementById("quiz-container").appendChild(optionsSection);
 
-    if (!oeuvres || oeuvres.length === 0) {
+    let pool;
+    if (modeRevision) {
+        pool = oeuvres.filter(o => erreurs.includes(o.titre));
+        if (pool.length === 0) {
+            alert("Aucune erreur à réviser pour le moment!");
+            modeRevision = false;
+            pool = shuffleArray([...oeuvres]).slice(0, 4);
+        }
+    } else {
+        pool = shuffleArray([...oeuvres]).slice(0, 4);
+    }
+
+    if (!pool || pool.length === 0) {
         tableauxSection.innerHTML = "<p>Aucune œuvre n'a été chargée</p>";
         return;
     }
 
-    let pool = shuffleArray([...oeuvres]).slice(0, 4);
     console.log(`${pool.length} œuvres sélectionnées pour le quiz`);
 
     let artistesList = [...new Set(pool.map(o => o.artiste))];
@@ -375,7 +399,76 @@ function loadData() {
 }
 
 function validateAnswers() {
-    // Vide pour le moment
+    const cards = document.querySelectorAll(".painting-card");
+    let totalCorrect = 0;
+    let total = 0;
+    
+    cards.forEach(card => {
+        const titreImage = card.querySelector("img").alt;
+        const dropArtiste = card.querySelector(".drop-zone.artiste");
+        const dropCourant = card.querySelector(".drop-zone.courant");
+        
+        const droppedArtiste = dropArtiste.querySelector(".dropped-painter");
+        const droppedCourant = dropCourant.querySelector(".dropped-painter");
+        
+        let correct = true;
+        
+        // Vérifie artiste
+        total++;
+        if (droppedArtiste && droppedArtiste.textContent === dropArtiste.dataset.answer) {
+            dropArtiste.classList.add("correct");
+            dropArtiste.classList.remove("incorrect");
+            totalCorrect++;
+        } else {
+            dropArtiste.classList.add("incorrect");
+            dropArtiste.classList.remove("correct");
+            correct = false;
+            if (droppedArtiste) {
+                droppedArtiste.textContent += ` ✗ (${dropArtiste.dataset.answer})`;
+            } else {
+                const correctAnswer = document.createElement("div");
+                correctAnswer.className = "dropped-painter correct-answer";
+                correctAnswer.textContent = `Réponse: ${dropArtiste.dataset.answer}`;
+                dropArtiste.appendChild(correctAnswer);
+            }
+        }
+        
+        // Vérifie courant
+        total++;
+        if (droppedCourant && droppedCourant.textContent === dropCourant.dataset.answer) {
+            dropCourant.classList.add("correct");
+            dropCourant.classList.remove("incorrect");
+            totalCorrect++;
+        } else {
+            dropCourant.classList.add("incorrect");
+            dropCourant.classList.remove("correct");
+            correct = false;
+            if (droppedCourant) {
+                droppedCourant.textContent += ` ✗ (${dropCourant.dataset.answer})`;
+            } else {
+                const correctAnswer = document.createElement("div");
+                correctAnswer.className = "dropped-painter correct-answer";
+                correctAnswer.textContent = `Réponse: ${dropCourant.dataset.answer}`;
+                dropCourant.appendChild(correctAnswer);
+            }
+        }
+        
+        // Gestion des erreurs pour le mode révision
+        if (!correct && !erreurs.includes(titreImage)) {
+            erreurs.push(titreImage);
+        }
+        if (correct) {
+            erreurs = erreurs.filter(e => e !== titreImage);
+        }
+    });
+    
+    localStorage.setItem("erreurs", JSON.stringify(erreurs));
+    
+    if (totalCorrect === total) {
+        alert("Parfait ! Toutes les réponses sont correctes !");
+    } else {
+        alert(`Vous avez ${totalCorrect} réponse(s) correcte(s) sur ${total}.`);
+    }
 }
 
 const modeNormalBtn = document.getElementById("mode-normal");
@@ -389,7 +482,15 @@ modeNormalBtn.addEventListener("click", () => { modeRevision = false; initQuiz()
 modeRevisionBtn.addEventListener("click", () => { modeRevision = true; initQuiz(); });
 resetErrorsBtn.addEventListener("click", () => { erreurs = []; localStorage.setItem("erreurs", JSON.stringify(erreurs)); alert("Erreurs vidées !"); });
 validateBtn.addEventListener("click", validateAnswers);
-closeModalBtn.addEventListener("click", () => { e.stopPropagation(); modal.classList.add("hidden"); });
-modal.addEventListener("click", (e) => { e.stopPropagation(); if (e.target === modal) { modal.classList.add("hidden"); } });
+closeModalBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Ajout de cette ligne
+    modal.classList.add("hidden");
+});
+modal.addEventListener("click", (e) => {
+    e.stopPropagation(); // Ajout de cette ligne
+    if (e.target === modal) {
+        modal.classList.add("hidden");
+    }
+});
 
 document.addEventListener("DOMContentLoaded", loadData);

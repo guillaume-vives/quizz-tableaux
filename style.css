@@ -4,7 +4,10 @@ body {
   padding: 20px;
   background: #f4f4f4;
   margin: 0;
+  font-size: 14px; /* Réduire la taille de police */
 }
+
+
 
 h1 {
   text-align: center;
@@ -43,10 +46,12 @@ h1 {
 /* Section des tableaux */
 .tableaux-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Augmenter la taille minimale */
   gap: 20px;
   width: 100%;
 }
+
+
 
 /* Section des options */
 .options-section {
@@ -126,8 +131,8 @@ h1 {
 
 .painting-card img {
   width: 100%;
-  height: 200px;
-  object-fit: cover;
+  height: auto; /* Ajuster la hauteur automatiquement */
+  object-fit: contain; /* Adapter l'image à la taille du conteneur */
   border-radius: 4px;
   cursor: pointer;
 }
@@ -136,6 +141,7 @@ h1 {
   font-weight: bold;
   color: #333;
   margin: 10px 0;
+  font-size: 16px; /* Réduire la taille de police */
 }
 
 /* Zones de drop */
