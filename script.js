@@ -36,6 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
             modal.classList.add("hidden");
         }
     });
+
+    // Ajout : fermeture via le bouton
+    document.getElementById("close-modal").addEventListener("click", () => {
+        modal.classList.add("hidden");
+    });
+    
 });
 
 function initQuiz() {
