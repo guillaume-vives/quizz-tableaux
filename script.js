@@ -25,12 +25,6 @@ function init() {
         erreurs = [];
     }
 
-    // Vérifier que les éléments HTML existent
-    const paintingsDiv = document.getElementById("paintings");
-    if (!paintingsDiv) {
-        console.error("Element #paintings non trouvé!");
-        return;
-    }
     
     const modeNormalBtn = document.getElementById("mode-normal");
     const modeRevisionBtn = document.getElementById("mode-revision");
@@ -79,8 +73,8 @@ function init() {
 
 // Chargement des données
 function loadData() {
-    const paintingsDiv = document.getElementById("paintings");
-    paintingsDiv.innerHTML = "<p>Chargement des œuvres...</p>";
+    const quizContainer = document.getElementById("quiz-container");
+    quizContainer.innerHTML = "<p>Chargement des œuvres...</p>";
     
     fetch("data/oeuvres.json")
         .then(response => {
@@ -96,13 +90,14 @@ function loadData() {
         })
         .catch(error => {
             console.error("Erreur:", error);
-            paintingsDiv.innerHTML = `<div class="error">
+            quizContainer.innerHTML = `<div class="error">
                 <h3>Erreur de chargement</h3>
                 <p>${error.message}</p>
                 <p>Vérifiez que le fichier data/oeuvres.json existe et est accessible.</p>
             </div>`;
         });
 }
+
 
 // Initialisation du quiz
 function initQuiz() {
