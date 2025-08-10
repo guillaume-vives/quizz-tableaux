@@ -1,5 +1,6 @@
 let oeuvres = [];
 let modeRevision = false;
+let modeCourant = false;  // Ajout d'une variable pour le mode courant
 let erreurs = JSON.parse(localStorage.getItem("erreurs")) || [];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,11 +14,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("mode-normal").addEventListener("click", () => {
         modeRevision = false;
+        modeCourant = false;  // Réinitialisation du mode courant
         initQuiz();
     });
 
     document.getElementById("mode-revision").addEventListener("click", () => {
         modeRevision = true;
+        modeCourant = false;  // Réinitialisation du mode courant
+        initQuiz();
+    });
+
+    document.getElementById("mode-courant").addEventListener("click", () => {  // Ajout du listener pour le mode courant
+        modeRevision = false;
+        modeCourant = true;  // Activation du mode courant
         initQuiz();
     });
 
@@ -44,7 +53,7 @@ function initQuiz() {
         ? oeuvres.filter(o => erreurs.includes(o.titre))
         : shuffleArray(oeuvres).slice(0, 4);
 
-    let paintersList = [...new Set(pool.map(o => o.artiste))];
+    let paintersList = [...new Set(pool.map(o => modeCourant ? o.mouvement : o.artiste))];  // Modification pour afficher le courant si le mode est activé
     paintersList = shuffleArray(paintersList);
 
     const paintersDiv = document.getElementById("painters");
@@ -70,7 +79,7 @@ function initQuiz() {
 
         const dropZone = document.createElement("div");
         dropZone.className = "drop-zone";
-        dropZone.dataset.answer = o.artiste;
+        dropZone.dataset.answer = modeCourant ? o.mouvement : o.artiste;  // Modification pour afficher le courant si le mode est activé
         dropZone.addEventListener("dragover", allowDrop);
         dropZone.addEventListener("drop", drop);
         card.appendChild(dropZone);
@@ -87,17 +96,24 @@ function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.textContent);
 }
 
+
 function drop(ev) {
     ev.preventDefault();
-    const data = ev.dataTransfer.setData("text");
-    ev.target.textContent = data;
+    const data = ev.dataTransfer.getData("text");
+    const droppedElement = document.createElement("div");  // Crée un nouvel élément div
+    droppedElement.textContent = data;  // Définit le texte de l'élément
+    droppedElement.className = "dropped-painter"; // Ajoute une classe pour le style
+    ev.target.appendChild(droppedElement);  // Ajoute l'élément à la zone de drop
 }
+
 
 function validateAnswers() {
     const zones = document.querySelectorAll(".drop-zone");
     zones.forEach(zone => {
         const titreImage = zone.parentElement.querySelector("img").alt;
-        if (zone.textContent === zone.dataset.answer) {
+        const droppedPainterElement = zone.querySelector(".dropped-painter"); // Récupère l'élément déposé
+        const droppedPainter = droppedPainterElement ? droppedPainterElement.textContent : ""; // Récupère le texte ou une chaîne vide si pas d'élément
+        if (droppedPainter === zone.dataset.answer) {
             zone.classList.add("correct");
             zone.classList.remove("incorrect");
             erreurs = erreurs.filter(e => e !== titreImage);
@@ -118,7 +134,7 @@ function showMetadata(o) {
         <h2>${o.titre}</h2>
         <p><strong>Artiste :</strong> ${o.artiste}</p>
         <p><strong>Année :</strong> ${o.annee}</p>
-        <p><strong>Courant :</strong> ${o.courant}</p>
+        <p><strong>Courant :</strong> ${o.mouvement}</p>
         <p><a href="${o.lien}" target="_blank">Voir la fiche Joconde</a></p>
     `;
     document.getElementById("modal").classList.remove("hidden");
