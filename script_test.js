@@ -389,7 +389,7 @@ modeNormalBtn.addEventListener("click", () => { modeRevision = false; initQuiz()
 modeRevisionBtn.addEventListener("click", () => { modeRevision = true; initQuiz(); });
 resetErrorsBtn.addEventListener("click", () => { erreurs = []; localStorage.setItem("erreurs", JSON.stringify(erreurs)); alert("Erreurs vidées !"); });
 validateBtn.addEventListener("click", validateAnswers);
-closeModalBtn.addEventListener("click", () => { modal.classList.add("hidden"); });
-modal.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.add("hidden"); } });
+closeModalBtn.addEventListener("click", () => { e.stopPropagation(); modal.classList.add("hidden"); });
+modal.addEventListener("click", (e) => { e.stopPropagation(); if (e.target === modal) { modal.classList.add("hidden"); } });
 
 document.addEventListener("DOMContentLoaded", loadData);
