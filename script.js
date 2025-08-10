@@ -16,59 +16,34 @@ let erreurs = [];
 // Fonction principale - point d'entrée
 function init() {
     console.log("Initialisation du quiz...");
-    
-    // Charger les erreurs depuis localStorage
-    try {
-        erreurs = JSON.parse(localStorage.getItem("erreurs")) || [];
-    } catch (e) {
-        console.error("Erreur lors du chargement des erreurs:", e);
-        erreurs = [];
-    }
 
-    
+    // Charger les erreurs depuis localStorage
+    try { erreurs = JSON.parse(localStorage.getItem("erreurs")) || []; } catch (e) { console.error("Erreur lors du chargement des erreurs:", e); erreurs = []; }
+
     const modeNormalBtn = document.getElementById("mode-normal");
     const modeRevisionBtn = document.getElementById("mode-revision");
     const resetErrorsBtn = document.getElementById("reset-errors");
     const validateBtn = document.getElementById("validate");
     const modal = document.getElementById("modal");
     const closeModalBtn = document.getElementById("close-modal");
-    
+
     if (!modeNormalBtn || !modeRevisionBtn || !resetErrorsBtn || !validateBtn || !modal || !closeModalBtn) {
         console.error("Un ou plusieurs éléments de contrôle sont manquants!");
         return;
     }
-    
+
     // Ajout des écouteurs d'événements
-    modeNormalBtn.addEventListener("click", () => {
-        modeRevision = false;
-        initQuiz();
-    });
-    
-    modeRevisionBtn.addEventListener("click", () => {
-        modeRevision = true;
-        initQuiz();
-    });
-    
-    resetErrorsBtn.addEventListener("click", () => {
-        erreurs = [];
-        localStorage.setItem("erreurs", JSON.stringify(erreurs));
-        alert("Erreurs vidées !");
-    });
-    
+    modeNormalBtn.addEventListener("click", () => { modeRevision = false; initQuiz(); });
+    modeRevisionBtn.addEventListener("click", () => { modeRevision = true; initQuiz(); });
+    resetErrorsBtn.addEventListener("click", () => { erreurs = []; localStorage.setItem("erreurs", JSON.stringify(erreurs)); alert("Erreurs vidées !"); });
     validateBtn.addEventListener("click", validateAnswers);
-    
-    closeModalBtn.addEventListener("click", () => {
-        modal.classList.add("hidden");
-    });
-    
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            modal.classList.add("hidden");
-        }
-    });
-    
+    closeModalBtn.addEventListener("click", () => { modal.classList.add("hidden"); });
+    modal.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.add("hidden"); } });
+
     // Chargement des données
     loadData();
+
+    // **SUPPRIMER CET APPEL : initQuiz();**
 }
 
 // Chargement des données
