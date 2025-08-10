@@ -99,12 +99,3 @@ h1 {
   border-radius: 8px;
   position: relative; /* Ajout pour positionner le bouton de fermeture */
 }
-
-#close-modal {
-  position: absolute; /* Positionnement absolu pour le bouton de fermeture */
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.2em; /* Augmentation de la taille de la croix */
-}
