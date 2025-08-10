@@ -121,6 +121,14 @@ h1 {
   background: #c0c0c0;
 }
 
+.drag-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .dropped-painter {
   text-align: center;
   padding: 5px;
