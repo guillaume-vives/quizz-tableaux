@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(data => {
       oeuvres = data;
       initQuiz();
-    });
+    })
+    .catch(error => console.error("Erreur lors du chargement des œuvres :", error)); // Ajout d'une gestion d'erreur pour le fetch
 
   document.getElementById("mode-normal").addEventListener("click", () => {
     modeRevision = false;
@@ -28,9 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("validate").addEventListener("click", validateAnswers);
 
-  document.getElementById("close-modal").addEventListener("click", () => {
-    document.getElementById("modal").classList.add("hidden");
-  });
+  // Correction: Sélectionner l'élément par son ID
+  const closeModalButton = document.getElementById("close-modal");
+
+  // Ajout d'une vérification pour s'assurer que le bouton existe
+  if (closeModalButton) {
+    closeModalButton.addEventListener("click", () => {
+      document.getElementById("modal").classList.add("hidden");
+    });
+  } else {
+    console.error("Le bouton de fermeture de la modal n'a pas été trouvé.");
+  }
 });
 
 function initQuiz() {
@@ -61,6 +70,7 @@ function initQuiz() {
 
     const img = document.createElement("img");
     img.src = o.image;
+    img.alt = o.titre;  // Ajout de l'attribut alt pour l'accessibilité
     img.addEventListener("click", () => showMetadata(o));
     card.appendChild(img);
 
@@ -92,16 +102,16 @@ function drop(ev) {
 function validateAnswers() {
   const zones = document.querySelectorAll(".drop-zone");
   zones.forEach(zone => {
+    const titreImage = zone.parentElement.querySelector("img").alt;
     if (zone.textContent === zone.dataset.answer) {
       zone.classList.add("correct");
       zone.classList.remove("incorrect");
-      erreurs = erreurs.filter(e => e !== zone.parentElement.querySelector("img").alt);
+      erreurs = erreurs.filter(e => e !== titreImage);
     } else {
       zone.classList.add("incorrect");
       zone.classList.remove("correct");
-      const titre = zone.parentElement.querySelector("img").alt;
-      if (!erreurs.includes(titre)) {
-        erreurs.push(zone.dataset.answer);
+      if (!erreurs.includes(titreImage)) {
+        erreurs.push(titreImage); // Stocker le titre de l'image incorrecte
       }
     }
   });

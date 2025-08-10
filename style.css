@@ -2,10 +2,12 @@ body {
   font-family: Arial, sans-serif;
   padding: 20px;
   background: #f4f4f4;
+  margin: 0; /* Ajout pour éviter les marges par défaut */
 }
 
 h1 {
   text-align: center;
+  margin-bottom: 20px; /* Ajout de marge en bas du titre */
 }
 
 #quiz-container {
@@ -16,8 +18,9 @@ h1 {
 
 #paintings {
   display: grid;
-  grid-template-columns: repeat(2, 200px);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adaptation pour les écrans plus petits */
   gap: 15px;
+  width: 70%; /* Ajustement de la largeur */
 }
 
 .painting-card {
@@ -26,12 +29,17 @@ h1 {
   border: 1px solid #ddd;
   text-align: center;
   min-height: 250px;
+  display: flex; /* Ajout pour centrer verticalement le contenu */
+  flex-direction: column; /* Ajout pour centrer verticalement le contenu */
+  justify-content: space-between; /* Ajout pour centrer verticalement le contenu */
 }
 
 .painting-card img {
   width: 100%;
   height: auto;
   cursor: pointer;
+  object-fit: cover; /* Empêche la déformation des images */
+  margin-bottom: 10px; /* Ajout de marge en bas de l'image */
 }
 
 .drop-zone {
@@ -39,13 +47,14 @@ h1 {
   padding: 8px;
   border: 2px dashed #ccc;
   min-height: 30px;
+  text-align: center; /* Centre le texte dans la zone de drop */
 }
 
 #painters {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 150px;
+  width: 25%; /* Ajustement de la largeur */
 }
 
 .painter {
@@ -54,6 +63,7 @@ h1 {
   border-radius: 5px;
   text-align: center;
   cursor: grab;
+  user-select: none; /* Empêche la sélection de texte pendant le drag */
 }
 
 .correct {
@@ -67,11 +77,15 @@ h1 {
 /* Modale */
 #modal {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.7);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000; /* Ajout pour s'assurer que la modale est au-dessus de tout */
 }
 
 .hidden {
@@ -83,10 +97,14 @@ h1 {
   padding: 20px;
   max-width: 400px;
   border-radius: 8px;
+  position: relative; /* Ajout pour positionner le bouton de fermeture */
 }
 
 #close-modal {
-  float: right;
+  position: absolute; /* Positionnement absolu pour le bouton de fermeture */
+  top: 10px;
+  right: 10px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 1.2em; /* Augmentation de la taille de la croix */
 }
