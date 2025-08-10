@@ -1,5 +1,8 @@
 "use strict";
 
+let modeRevision = false;
+let erreurs = [];
+
 function initQuiz() {
     const paintingsDiv = document.getElementById("paintings");
     if (paintingsDiv) {
@@ -28,4 +31,22 @@ function loadData() {
         });
 }
 
-document.addEventListener("DOMContentLoaded", loadData); // Appeler loadData au chargement du DOM
+function validateAnswers() {
+    // Vide pour le moment
+}
+
+const modeNormalBtn = document.getElementById("mode-normal");
+const modeRevisionBtn = document.getElementById("mode-revision");
+const resetErrorsBtn = document.getElementById("reset-errors");
+const validateBtn = document.getElementById("validate");
+const modal = document.getElementById("modal");
+const closeModalBtn = document.getElementById("close-modal");
+
+modeNormalBtn.addEventListener("click", () => { modeRevision = false; initQuiz(); });
+modeRevisionBtn.addEventListener("click", () => { modeRevision = true; initQuiz(); });
+resetErrorsBtn.addEventListener("click", () => { erreurs = []; localStorage.setItem("erreurs", JSON.stringify(erreurs)); alert("Erreurs vidées !"); });
+validateBtn.addEventListener("click", validateAnswers);
+closeModalBtn.addEventListener("click", () => { modal.classList.add("hidden"); });
+modal.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.add("hidden"); } });
+
+document.addEventListener("DOMContentLoaded", loadData);
