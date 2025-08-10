@@ -102,15 +102,9 @@ function loadData() {
 // Initialisation du quiz
 function initQuiz() {
     console.log("Initialisation du quiz...");
-    const paintingsDiv = document.getElementById("paintings");
-    if (!paintingsDiv) {
-        console.error("Element #paintings non trouvé lors de l'initialisation du quiz!");
-        return;
-    }
-    
-    // Créer le conteneur principal
-    const quizContainer = document.getElementById("quiz-container");
-    quizContainer.innerHTML = "";
+
+    const paintingsDiv = document.getElementById("paintings"); // On récupère l'élément paintings
+    paintingsDiv.innerHTML = ""; // On s'assure qu'il est vide
     
     // Créer la section des tableaux
     const tableauxSection = document.createElement("div");
@@ -122,9 +116,10 @@ function initQuiz() {
     optionsSection.id = "options-section";
     optionsSection.className = "options-section";
     
-    // Ajouter les sections au conteneur
-    quizContainer.appendChild(tableauxSection);
-    quizContainer.appendChild(optionsSection);
+    // Ajouter les sections au conteneur paintingsDiv et optionsSection dans quizContainer
+    paintingsDiv.appendChild(tableauxSection); // Les tableaux dans paintingsDiv
+    const quizContainer = document.getElementById("quiz-container");
+    quizContainer.appendChild(optionsSection); // les options dans quizContainer
     
     if (!oeuvres || oeuvres.length === 0) {
         tableauxSection.innerHTML = "<p>Aucune œuvre n'a été chargée</p>";
@@ -153,7 +148,7 @@ function initQuiz() {
     // Création des cartes de tableaux (sans les options de drag)
     pool.forEach(oeuvre => {
         const card = createPaintingCard(oeuvre);
-        tableauxSection.appendChild(card);
+        tableauxSection.appendChild(card); // Ajout des cartes à tableauxSection
     });
     
     // Création de la section des artistes
@@ -192,6 +187,7 @@ function initQuiz() {
     optionsSection.appendChild(artistesContainer);
     optionsSection.appendChild(courantsContainer);
 }
+
 
 
 // Création d'une carte de tableau
