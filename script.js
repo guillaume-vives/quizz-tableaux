@@ -29,19 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("validate").addEventListener("click", validateAnswers);
 
-    // Fermeture de la modale en cliquant à l'extérieur
+    // Fermeture de la modale via le bouton
     const modal = document.getElementById("modal");
-    modal.addEventListener("click", (event) => {
-        if (event.target === modal) {
-            modal.classList.add("hidden");
-        }
-    });
-
-    // Ajout : fermeture via le bouton
     document.getElementById("close-modal").addEventListener("click", () => {
         modal.classList.add("hidden");
     });
-    
 });
 
 function initQuiz() {
@@ -97,7 +89,7 @@ function drag(ev) {
 
 function drop(ev) {
     ev.preventDefault();
-    const data = ev.dataTransfer.getData("text");
+    const data = ev.dataTransfer.setData("text");
     ev.target.textContent = data;
 }
 
