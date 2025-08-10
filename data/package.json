@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "stream-json": "^1.9.1"
+  }
+}

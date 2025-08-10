@@ -1,0 +1,92 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f4f4f4;
+}
+
+h1 {
+  text-align: center;
+}
+
+#quiz-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#paintings {
+  display: grid;
+  grid-template-columns: repeat(2, 200px);
+  gap: 15px;
+}
+
+.painting-card {
+  background: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  min-height: 250px;
+}
+
+.painting-card img {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.drop-zone {
+  margin-top: 10px;
+  padding: 8px;
+  border: 2px dashed #ccc;
+  min-height: 30px;
+}
+
+#painters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 150px;
+}
+
+.painter {
+  background: #e0e0e0;
+  padding: 8px;
+  border-radius: 5px;
+  text-align: center;
+  cursor: grab;
+}
+
+.correct {
+  background: #c8e6c9;
+}
+
+.incorrect {
+  background: #ffcdd2;
+}
+
+/* Modale */
+#modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  max-width: 400px;
+  border-radius: 8px;
+}
+
+#close-modal {
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+}

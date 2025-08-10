@@ -1,0 +1,14 @@
+# Node.js
+node_modules/
+package-lock.json
+
+# Fichiers système Windows
+*.Zone.Identifier
+
+# Données locales ou volumineuses
+data/node_modules/
+data/package-lock.json
+
+# Sauvegardes / fichiers temporaires
+*.tmp
+*.log
