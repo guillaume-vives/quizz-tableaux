@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz Peintres & Tableaux</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Quiz Peintres & Tableaux</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Quiz : Associez les tableaux à leur peintre</h1>
+    <h1>Quiz : Associez les tableaux à leur peintre</h1>
 
-<div id="controls">
-  <button id="mode-normal">Mode Normal</button>
-  <button id="mode-revision">Mode Révision</button>
-  <button id="reset-errors">Vider les erreurs</button>
-</div>
-
-  <div id="quiz-container">
-    <div id="paintings"></div>
-  </div>
-
-  <button id="validate">Valider les réponses</button>
-
-  <!-- Modale pour les métadonnées -->
-  <div id="modal" class="hidden">
-    <div class="modal-content">
-      <button id="close-modal" style="position:absolute;top:10px;right:10px;">✖</button>
-      <div id="metadata"></div>
+    <div id="controls">
+        <button id="mode-normal">Mode Normal</button>
+        <button id="mode-revision">Mode Révision</button>
+        <button id="reset-errors">Vider les erreurs</button>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <div id="quiz-container">
+        <!-- Les sections des tableaux et des options seront ajoutées ici -->
+    </div>
+
+    <button id="validate">Valider les réponses</button>
+
+    <!-- Modale pour les métadonnées -->
+    <div id="modal" class="hidden">
+        <div class="modal-content">
+            <button id="close-modal" style="position:absolute;top:10px;right:10px;">✖</button>
+            <div id="metadata"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

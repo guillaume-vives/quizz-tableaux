@@ -113,10 +113,26 @@ function initQuiz() {
         return;
     }
     
-    paintingsDiv.innerHTML = "";
+    // Créer le conteneur principal
+    const quizContainer = document.getElementById("quiz-container");
+    quizContainer.innerHTML = "";
+    
+    // Créer la section des tableaux
+    const tableauxSection = document.createElement("div");
+    tableauxSection.id = "tableaux-section";
+    tableauxSection.className = "tableaux-section";
+    
+    // Créer la section des options (artistes et courants)
+    const optionsSection = document.createElement("div");
+    optionsSection.id = "options-section";
+    optionsSection.className = "options-section";
+    
+    // Ajouter les sections au conteneur
+    quizContainer.appendChild(tableauxSection);
+    quizContainer.appendChild(optionsSection);
     
     if (!oeuvres || oeuvres.length === 0) {
-        paintingsDiv.innerHTML = "<p>Aucune œuvre n'a été chargée</p>";
+        tableauxSection.innerHTML = "<p>Aucune œuvre n'a été chargée</p>";
         return;
     }
     
@@ -138,18 +154,53 @@ function initQuiz() {
     // Extraction des listes d'artistes et de courants
     let artistesList = [...new Set(pool.map(o => o.artiste))];
     let courantsList = [...new Set(pool.map(o => o.mouvement))];
-    artistesList = shuffleArray([...artistesList]);
-    courantsList = shuffleArray([...courantsList]);
     
-    // Création des cartes
+    // Création des cartes de tableaux (sans les options de drag)
     pool.forEach(oeuvre => {
-        const card = createPaintingCard(oeuvre, artistesList, courantsList);
-        paintingsDiv.appendChild(card);
+        const card = createPaintingCard(oeuvre);
+        tableauxSection.appendChild(card);
     });
+    
+    // Création de la section des artistes
+    const artistesContainer = document.createElement("div");
+    artistesContainer.className = "options-container artistes-container";
+    artistesContainer.innerHTML = "<h3>Artistes</h3>";
+    
+    // Création de la section des courants
+    const courantsContainer = document.createElement("div");
+    courantsContainer.className = "options-container courants-container";
+    courantsContainer.innerHTML = "<h3>Courants artistiques</h3>";
+    
+    // Ajouter les artistes
+    shuffleArray([...artistesList]).forEach(artiste => {
+        const div = document.createElement("div");
+        div.className = "option-item artiste";
+        div.textContent = artiste;
+        div.draggable = true;
+        div.dataset.type = "artiste";
+        div.addEventListener("dragstart", drag);
+        artistesContainer.appendChild(div);
+    });
+    
+    // Ajouter les courants
+    shuffleArray([...courantsList]).forEach(courant => {
+        const div = document.createElement("div");
+        div.className = "option-item courant";
+        div.textContent = courant;
+        div.draggable = true;
+        div.dataset.type = "courant";
+        div.addEventListener("dragstart", drag);
+        courantsContainer.appendChild(div);
+    });
+    
+    // Ajouter les conteneurs à la section des options
+    optionsSection.appendChild(artistesContainer);
+    optionsSection.appendChild(courantsContainer);
 }
 
+
 // Création d'une carte de tableau
-function createPaintingCard(oeuvre, artistesList, courantsList) {
+function createPaintingCard(oeuvre) {
     const card = document.createElement("div");
     card.className = "painting-card";
     
@@ -158,7 +209,7 @@ function createPaintingCard(oeuvre, artistesList, courantsList) {
     img.src = oeuvre.image;
     img.alt = oeuvre.titre;
     img.style.cursor = "pointer";
-    img.addEventListener("click", () => openFullscreen(img));
+    img.addEventListener("click", () => showZoomableImage(oeuvre.image, oeuvre.titre));
     card.appendChild(img);
     
     // Bouton d'info
@@ -195,26 +246,8 @@ function createPaintingCard(oeuvre, artistesList, courantsList) {
     dropCourant.addEventListener("dragover", allowDrop);
     dropCourant.addEventListener("dragenter", handleDragEnter);
     dropCourant.addEventListener("dragleave", handleDragLeave);
-    dropArtiste.addEventListener("drop", drop);
+    dropCourant.addEventListener("drop", drop);
     card.appendChild(dropCourant);
-    
-    // Zone de drag and drop
-    const dragZone = document.createElement("div");
-    dragZone.className = "drag-items";
-    const items = shuffleArray([
-        ...artistesList.map(a => ({ type: "artiste", value: a })),
-        ...courantsList.map(c => ({ type: "courant", value: a }))
-    ]);
-    items.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "painter " + item.type;
-        div.textContent = item.value;
-        div.draggable = true;
-        div.dataset.type = item.type;
-        div.addEventListener("dragstart", drag);
-        dragZone.appendChild(div);
-    });
-    card.appendChild(dragZone);
     
     return card;
 }
@@ -275,14 +308,176 @@ function drop(ev) {
 // Afficher la métadonnée d'une œuvre
 function showMetadata(oeuvre) {
     const metaDiv = document.getElementById("metadata");
+    
+    // Générer le lien Wikipedia basé sur le titre de l'oeuvre et l'artiste
+    const wikiSearch = encodeURIComponent(`${oeuvre.titre} ${oeuvre.artiste} peinture`);
+    const wikiLink = `https://fr.wikipedia.org/wiki/Special:Search?search=${wikiSearch}`;
+    
     metaDiv.innerHTML = `
         <h2>${oeuvre.titre}</h2>
         <p><strong>Artiste :</strong> ${oeuvre.artiste}</p>
         <p><strong>Année :</strong> ${oeuvre.annee}</p>
         <p><strong>Courant :</strong> ${oeuvre.mouvement}</p>
-        <p><a href="${oeuvre.lien}" target="_blank">Voir la fiche</a></p>
+        <div class="links-container">
+            <p><a href="${oeuvre.lien}" target="_blank">Voir la fiche originale</a></p>
+            <p><a href="${wikiLink}" target="_blank">Rechercher sur Wikipédia</a></p>
+        </div>
     `;
     document.getElementById("modal").classList.remove("hidden");
+}
+
+function showZoomableImage(imageSrc, title) {
+    // Créer un conteneur modal pour l'image
+    const modal = document.createElement("div");
+    modal.className = "image-modal";
+    
+    // Créer le conteneur pour l'image zoomable
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "zoomable-image-container";
+    
+    // Créer l'image
+    const img = document.createElement("img");
+    img.src = imageSrc;
+    img.alt = title;
+    img.className = "zoomable-image";
+    
+    // Ajouter des contrôles de zoom
+    const zoomControls = document.createElement("div");
+    zoomControls.className = "zoom-controls";
+    
+    const zoomInBtn = document.createElement("button");
+    zoomInBtn.innerHTML = "+";
+    zoomInBtn.title = "Zoom in";
+    
+    const zoomOutBtn = document.createElement("button");
+    zoomOutBtn.innerHTML = "-";
+    zoomOutBtn.title = "Zoom out";
+    
+    const resetZoomBtn = document.createElement("button");
+    resetZoomBtn.innerHTML = "&#x1f5d8;"; // symbole reset
+    resetZoomBtn.title = "Reset zoom";
+    
+    const closeBtn = document.createElement("button");
+    closeBtn.innerHTML = "×";
+    closeBtn.className = "close-modal-btn";
+    
+    // Ajouter un titre
+    const titleElem = document.createElement("h3");
+    titleElem.textContent = title;
+    
+    // Assembler les éléments
+    zoomControls.appendChild(zoomInBtn);
+    zoomControls.appendChild(zoomOutBtn);
+    zoomControls.appendChild(resetZoomBtn);
+    
+    imageContainer.appendChild(img);
+    modal.appendChild(closeBtn);
+    modal.appendChild(titleElem);
+    modal.appendChild(imageContainer);
+    modal.appendChild(zoomControls);
+    
+    document.body.appendChild(modal);
+    
+    // Variables pour le zoom et le déplacement
+    let scale = 1;
+    let panning = false;
+    let pointX = 0;
+    let pointY = 0;
+    let start = { x: 0, y: 0 };
+    
+    // Fonction pour appliquer la transformation
+    function setTransform() {
+        img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    }
+    
+    // Event listeners pour le zoom
+    zoomInBtn.addEventListener("click", function() {
+        scale += 0.1;
+        setTransform();
+    });
+    
+    zoomOutBtn.addEventListener("click", function() {
+        scale = Math.max(0.5, scale - 0.1);
+        setTransform();
+    });
+    
+    resetZoomBtn.addEventListener("click", function() {
+        scale = 1;
+        pointX = 0;
+        pointY = 0;
+        setTransform();
+    });
+    
+    // Event listeners pour le déplacement de l'image
+    img.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        start = { x: e.clientX - pointX, y: e.clientY - pointY };
+        panning = true;
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!panning) return;
+        pointX = (e.clientX - start.x);
+        pointY = (e.clientY - start.y);
+        setTransform();
+    });
+    
+    document.addEventListener('mouseup', function(e) {
+        panning = false;
+    });
+    
+    // Support pour le pinch zoom sur mobile
+    let evCache = new Array();
+    let prevDiff = -1;
+    
+    img.addEventListener('touchstart', function(e) {
+        for (let i = 0; i < e.touches.length; i++) {
+            evCache.push(e.touches[i]);
+        }
+    });
+    
+    img.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2) {
+            // Pinch zoom
+            let curDiff = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
+            
+            if (prevDiff > 0) {
+                if (curDiff > prevDiff) {
+                    // Les doigts s'écartent, zoom in
+                    scale += 0.02;
+                    setTransform();
+                }
+                if (curDiff < prevDiff) {
+                    // Les doigts se rapprochent, zoom out
+                    scale = Math.max(0.5, scale - 0.02);
+                    setTransform();
+                }
+            }
+            
+            prevDiff = curDiff;
+        } else if (e.touches.length === 1) {
+            // Déplacement avec un doigt
+            pointX = e.touches[0].clientX - start.x;
+            pointY = e.touches[0].clientY - start.y;
+            setTransform();
+        }
+    });
+    
+    img.addEventListener('touchend', function(e) {
+        evCache = [];
+        prevDiff = -1;
+    });
+    
+    // Fermer le modal
+    closeBtn.addEventListener('click', function() {
+        document.body.removeChild(modal);
+    });
+    
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
 }
 
 // Ouvrir l'image en plein écran
