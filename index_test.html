@@ -6,16 +6,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Quiz : Associez les tableaux à leur peintre</h1>
-
-    <div id="controls">
-        <button id="mode-normal">Mode Normal</button>
-        <button id="mode-revision">Mode Révision</button>
-        <button id="reset-errors">Vider les erreurs</button>
-    </div>
+    <h1>
+        Quiz : Associez les tableaux à leur peintre
+            <div id="controls">
+                <button id="mode-normal">Mode Normal</button>
+                <button id="mode-revision">Mode Révision</button>
+                <button id="reset-errors">Vider les erreurs</button>
+            </div>
+    </h1>
 
     <div id="quiz-container">
         <div id="paintings"></div>
+        <div id="options-section" class="options-section">
+            <div id="artistes-container" class="options-container artistes-container">
+                <h3>Artistes</h3>
+            </div>
+            <div id="courants-container" class="options-container courants-container">
+                <h3>Courants artistiques</h3>
+            </div>
+        </div>
     </div>
 
     <button id="validate">Valider les réponses</button>

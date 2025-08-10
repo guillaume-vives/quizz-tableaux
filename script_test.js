@@ -137,15 +137,6 @@ function showZoomableImage(imageSrc, title) {
     modal.appendChild(closeBtn);
     modal.appendChild(titleElem);
     modal.appendChild(imageContainer);
-    zoomControls.appendChild(zoomInBtn);
-    zoomControls.appendChild(zoomOutBtn);
-    zoomControls.appendChild(resetZoomBtn);
-
-    imageContainer.appendChild(img);
-    modal.appendChild(closeBtn);
-    modal.appendChild(titleElem);
-    modal.appendChild(imageContainer);
-    modal.appendChild(zoomControls);
 
     document.body.appendChild(modal);
 
@@ -312,12 +303,7 @@ function initQuiz() {
     tableauxSection.id = "tableaux-section";
     tableauxSection.className = "tableaux-section";
 
-    const optionsSection = document.createElement("div");
-    optionsSection.id = "options-section";
-    optionsSection.className = "options-section";
-
     paintingsDiv.appendChild(tableauxSection);
-    document.getElementById("quiz-container").appendChild(optionsSection);
 
     let pool;
     if (modeRevision) {
@@ -346,12 +332,10 @@ function initQuiz() {
         tableauxSection.appendChild(card);
     });
 
-    const artistesContainer = document.createElement("div");
-    artistesContainer.className = "options-container artistes-container";
+    const artistesContainer = document.getElementById("artistes-container");
     artistesContainer.innerHTML = "<h3>Artistes</h3>";
 
-    const courantsContainer = document.createElement("div");
-    courantsContainer.className = "options-container courants-container";
+    const courantsContainer = document.getElementById("courants-container");
     courantsContainer.innerHTML = "<h3>Courants artistiques</h3>";
 
     shuffleArray([...artistesList]).forEach(artiste => {
@@ -373,9 +357,6 @@ function initQuiz() {
         div.addEventListener("dragstart", drag);
         courantsContainer.appendChild(div);
     });
-
-    optionsSection.appendChild(artistesContainer);
-    optionsSection.appendChild(courantsContainer);
 }
 
 function loadData() {

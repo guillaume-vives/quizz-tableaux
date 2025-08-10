@@ -7,11 +7,12 @@ body {
   font-size: 14px; /* Réduire la taille de police */
 }
 
-
-
 h1 {
-  text-align: center;
-  margin-bottom: 20px;
+    text-align: left;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Contrôles */
@@ -51,18 +52,16 @@ h1 {
   width: 100%;
 }
 
-
-
 /* Section des options */
 .options-section {
   display: flex;
-  gap: 20px;
-  margin: 20px 0;
+  gap: 10px; /* Réduire l'espacement */
+  margin: 10px 0; /* Réduire la marge */
 }
 
 .options-container {
   flex: 1;
-  padding: 15px;
+  padding: 10px; /* Réduire le padding */
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
@@ -130,11 +129,11 @@ h1 {
 }
 
 .painting-card img {
-  width: 100%;
-  height: auto; /* Ajuster la hauteur automatiquement */
-  object-fit: contain; /* Adapter l'image à la taille du conteneur */
-  border-radius: 4px;
-  cursor: pointer;
+    width: 100%;
+    height: 200px; /* Définir une hauteur fixe */
+    object-fit: cover; /* Remplir l'espace en rognant si nécessaire */
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .painting-title {
